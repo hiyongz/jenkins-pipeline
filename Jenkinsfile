@@ -1,53 +1,61 @@
 pipeline {
-    agent {
-	node {
-		label "win_agent"
-		}
-	}
-    stages {
-	stage('begin'){
-		steps {
-			echo 'begin'
-			sleep 2
-		}
-	}
-	stage('running'){
-		steps {
-		   echo 'running'
-		   script {
-			   RUNNING_STATU = sh (
-					script: "echo 'running'",
-					returnStatus: true
-			   ) == 0
-			
-			   if ("${RUNNING_STATU}" == "false") {
-					catchError(stageResult: 'FAILURE') {
-						echo "执行失败"
-					}
-					sh "EXIT 1"
-				}
-			}
-			sleep 2
-		}
-	}
-	stage('finish'){
-		steps {
-			echo 'finish'
-			sleep 2
-		}
-	}
+  agent {
+    node {
+      label 'win_agent'
     }
-    post {
-        success {
-            echo 'success!'
-            sleep 2
-        }
-        failure {
-            echo 'failed...'
-            sleep 2
-        }
-        always {
-            echo 'goodbye'
-        }
+
+  }
+  stages {
+    stage('begin') {
+      steps {
+        echo 'begin'
+        sleep 2
+      }
     }
+
+    stage('running') {
+      steps {
+        echo 'running'
+        script {
+          RUNNING_STATU = sh (
+            script: "echo 'running'",
+            returnStatus: true
+          ) == 0
+
+          if ("${RUNNING_STATU}" == "false") {
+            catchError(stageResult: 'FAILURE') {
+              echo "执行失败"
+            }
+            sh "EXIT 1"
+          }
+        }
+
+        sleep 2
+      }
+    }
+
+    stage('finish') {
+      steps {
+        echo 'finish'
+        sleep 2
+      }
+    }
+
+  }
+  post {
+    success {
+      echo 'success!'
+      sleep 2
+    }
+
+    failure {
+      echo 'failed...'
+      sleep 2
+    }
+
+    always {
+      echo 'goodbye'
+    }
+
+  }
 }
